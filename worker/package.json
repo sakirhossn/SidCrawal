@@ -1,0 +1,25 @@
+{
+  "name": "sidcrawal-browser-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "crawl:batch": "tsx src/batch.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
+    "pixelmatch": "^8.0.0",
+    "playwright-core": "^1.58.2",
+    "pngjs": "^7.0.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "@types/pngjs": "^6.0.5",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.0"
+  }
+}

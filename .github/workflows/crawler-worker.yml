@@ -1,0 +1,56 @@
+name: SidCrawal Playwright Crawler Worker
+
+on:
+  workflow_dispatch:
+    inputs:
+      batch_limit:
+        description: "Maximum due crawl jobs to process in this run"
+        required: false
+        default: "10"
+      monitor_id:
+        description: "Optional specific monitor UUID to crawl immediately"
+        required: false
+        default: ""
+  schedule:
+    # Fallback periodic trigger alongside primary Cloudflare Cron dispatcher
+    - cron: "*/15 * * * *"
+
+concurrency:
+  group: sidcrawal-crawler-batch
+  cancel-in-progress: false
+
+jobs:
+  run-crawler:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NODE_ENV: production
+      PLAYWRIGHT_NO_SANDBOX: "true"
+      CRAWL_BATCH_LIMIT: ${{ github.event.inputs.batch_limit || '10' }}
+      CRAWL_CONCURRENCY: "2"
+      TARGET_MONITOR_ID: ${{ github.event.inputs.monitor_id || '' }}
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+      CLOUDFLARE_DISPATCH_SECRET: ${{ secrets.CLOUDFLARE_DISPATCH_SECRET }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: |
+            package-lock.json
+            worker/package-lock.json
+
+      - name: Install crawler worker dependencies
+        run: cd worker && npm ci
+
+      - name: Install Playwright Chromium browser
+        run: npx --prefix worker playwright-core install chromium --with-deps
+
+      - name: Execute scheduled Playwright crawler batch
+        run: npm --prefix worker run crawl:batch
