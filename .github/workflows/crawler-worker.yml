@@ -47,7 +47,7 @@ jobs:
             worker/package-lock.json
 
       - name: Install crawler worker dependencies
-        run: cd worker && npm ci
+        run: cd worker && npm ci --include=dev
 
       - name: Install Playwright Chromium browser
         run: npx --prefix worker playwright-core install chromium --with-deps

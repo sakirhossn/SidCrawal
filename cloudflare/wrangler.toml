@@ -8,5 +8,6 @@ crons = ["*/5 * * * *"]
 [vars]
 DISPATCH_BATCH_LIMIT = "10"
 DISPATCH_WORKER_ID = "cloudflare-cron"
+NEXT_APP_URL = "https://sidcrawal.vercel.app"
 # Set NEXT_APP_URL via wrangler.toml [vars] or dashboard, and store CLOUDFLARE_DISPATCH_SECRET using:
 #   npx wrangler secret put CLOUDFLARE_DISPATCH_SECRET
